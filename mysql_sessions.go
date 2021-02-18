@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/bjbigler/database"
-	"github.com/bjbigler/princeton-seminars/utils"
+	"github.com/bjbigler/utils"
 	"github.com/jmoiron/sqlx"
 )
 

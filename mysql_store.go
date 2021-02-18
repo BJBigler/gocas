@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/bjbigler/database"
-	"github.com/bjbigler/princeton-seminars/utils"
+	"github.com/bjbigler/utils"
 	"github.com/golang/glog"
 	"github.com/jmoiron/sqlx"
 )
