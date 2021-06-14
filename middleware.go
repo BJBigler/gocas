@@ -10,10 +10,6 @@ import (
 func (c *Client) Handler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		//Redirects all traffic to Princeton Seminars
-		//http.Redirect(w, r, "https://princeton.seminars.app", 302)
-		//return
-
 		if glog.V(2) {
 			glog.Infof("cas: handling %v request for %v", r.Method, r.URL)
 		}
@@ -40,10 +36,6 @@ func (c *Client) Handler(h http.Handler) http.Handler {
 //AllowAnonHandler ...
 func (c *Client) AllowAnonHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		//Redirects all traffic to Princeton Seminars
-		//http.Redirect(w, r, "https://princeton.seminars.app", 302)
-		//return
 
 		if glog.V(2) {
 			glog.Infof("cas: handling %v request for %v", r.Method, r.URL)
