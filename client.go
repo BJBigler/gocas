@@ -16,16 +16,16 @@ import (
 
 //Options for client configuration
 type Options struct {
-	Context                         context.Context
-	URL                             *url.URL     // URL to the CAS service
-	Store                           TicketStore  // Custom TicketStore, if nil a MemoryStore will be used
-	SessionStore                    SessionStore //Custom SessionStore, for CGI and AppEngine-type environments, where session state isn't maintained or disappears periodically
-	Domain                          string       //cookie domain
-	Client                          *http.Client // Custom http client to allow options for http connections
-	SendService                     bool         // Custom sendService to determine whether you need to send service param
-	RunOnLogin                      RunOnLogin   //Provides functionality to run a function post-login
-	ServiceURLRequiresTrailingSlash bool
-	DB                              *database.DB //Added by BJBigler; should be connection to DB providing store if using MySql
+	Context      context.Context
+	URL          *url.URL     // URL to the CAS service
+	Store        TicketStore  // Custom TicketStore, if nil a MemoryStore will be used
+	SessionStore SessionStore //Custom SessionStore, for CGI and AppEngine-type environments, where session state isn't maintained or disappears periodically
+	Domain       string       //cookie domain
+	Client       *http.Client // Custom http client to allow options for http connections
+	SendService  bool         // Custom sendService to determine whether you need to send service param
+	RunOnLogin   RunOnLogin   //Provides functionality to run a function post-login
+	//ServiceURLRequiresTrailingSlash bool
+	DB *database.DB //Added by BJBigler; should be connection to DB providing store if using MySql
 	// UseMySQLSessions  bool                             //Added by BJBigler to accomodate CGI, which doesn't have server sessions.
 	// FirestoreSessions bool                             //Added BJBigler to accomodate CGI using Firestore as the backend DB
 	// RunOnLogin   func(*database.DB, string) error //func to run on login; string should be the netid
@@ -35,17 +35,17 @@ type Options struct {
 
 // Client implements the main protocol
 type Client struct {
-	context                         context.Context
-	URL                             *url.URL
-	tickets                         TicketStore
-	sessions                        SessionStore
-	client                          *http.Client
-	domain                          string //cookie domain
-	serviceURLRequiresTrailingSlash bool
-	mu                              sync.Mutex
-	sendService                     bool
-	runOnLogin                      RunOnLogin
-	db                              *database.DB //Database connection
+	context     context.Context
+	URL         *url.URL
+	tickets     TicketStore
+	sessions    SessionStore
+	client      *http.Client
+	domain      string //cookie domain
+	mu          sync.Mutex
+	sendService bool
+	runOnLogin  RunOnLogin
+	db          *database.DB //Database connection
+	//serviceURLRequiresTrailingSlash bool
 	// useMySQLSessions     bool
 	// useFirestoreSessions bool
 	// runOnLogin   func(*database.DB, string) error //Function to run on login
@@ -83,16 +83,16 @@ func NewClient(options *Options) *Client {
 	}
 
 	return &Client{
-		context:                         options.Context,
-		URL:                             options.URL,
-		tickets:                         tickets, //ticket store
-		client:                          client,
-		domain:                          options.Domain,
-		sessions:                        sessions,
-		sendService:                     options.SendService,
-		runOnLogin:                      options.RunOnLogin,
-		serviceURLRequiresTrailingSlash: options.ServiceURLRequiresTrailingSlash,
-		db:                              options.DB,
+		context:     options.Context,
+		URL:         options.URL,
+		tickets:     tickets, //ticket store
+		client:      client,
+		domain:      options.Domain,
+		sessions:    sessions,
+		sendService: options.SendService,
+		runOnLogin:  options.RunOnLogin,
+		//serviceURLRequiresTrailingSlash: options.ServiceURLRequiresTrailingSlash,
+		db: options.DB,
 		// useMySQLSessions:     options.UseMySQLSessions,
 		// useFirestoreSessions: options.FirestoreSessions,
 		//runOnLoginDB: options.RunOnLoginDB,
@@ -146,7 +146,7 @@ func (c *Client) LoginURLForRequest(r *http.Request, referer *url.URL) (string, 
 		return "", err
 	}
 
-	serviceURL := sanitisedURLString(service, c.serviceURLRequiresTrailingSlash)
+	serviceURL := sanitisedURLString(service)
 
 	q := u.Query()
 	q.Add("service", serviceURL)
@@ -169,7 +169,7 @@ func (c *Client) LogoutURLForRequest(r *http.Request) (string, error) {
 		}
 
 		q := u.Query()
-		q.Add("service", sanitisedURLString(service, c.serviceURLRequiresTrailingSlash))
+		q.Add("service", sanitisedURLString(service))
 		u.RawQuery = q.Encode()
 	}
 
@@ -189,7 +189,7 @@ func (c *Client) ServiceValidateURLForRequest(ticket string, r *http.Request) (s
 	}
 
 	q := u.Query()
-	q.Add("service", sanitisedURLString(service, c.serviceURLRequiresTrailingSlash))
+	q.Add("service", sanitisedURLString(service))
 	q.Add("ticket", ticket)
 	u.RawQuery = q.Encode()
 
@@ -209,7 +209,7 @@ func (c *Client) ValidateURLForRequest(ticket string, r *http.Request) (string, 
 	}
 
 	q := u.Query()
-	q.Add("service", sanitisedURLString(service, c.serviceURLRequiresTrailingSlash))
+	q.Add("service", sanitisedURLString(service))
 	q.Add("ticket", ticket)
 	u.RawQuery = q.Encode()
 
