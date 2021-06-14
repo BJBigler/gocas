@@ -193,6 +193,7 @@ func (c *Client) ServiceValidateURLForRequest(ticket string, r *http.Request) (s
 	q.Add("ticket", ticket)
 	u.RawQuery = q.Encode()
 
+	fmt.Println("URL for request", u.String())
 	return u.String(), nil
 }
 
