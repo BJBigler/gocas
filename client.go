@@ -321,7 +321,7 @@ func (c *Client) validateTicket(ticket string, service *http.Request) error {
 	success, err := ParseServiceResponse(body)
 
 	if err != nil {
-		fmt.Println(fmt.Sprintf("Error ParsingServiceResponse: %v", err))
+		fmt.Printf("error ParsingServiceResponse: %v\n", err)
 		return err
 	}
 
@@ -330,7 +330,7 @@ func (c *Client) validateTicket(ticket string, service *http.Request) error {
 	}
 
 	if err := c.tickets.Write(ticket, success); err != nil {
-		fmt.Println(fmt.Sprintf("Error writing ticket: %v", err))
+		fmt.Printf("Error writing ticket: %v\n", err)
 		return err
 	}
 

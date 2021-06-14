@@ -75,11 +75,14 @@ func ParseServiceResponse(data []byte) (*AuthenticationResponse, error) {
 
 	var x xmlServiceResponse
 
+	fmt.Println("Ticket data is", string(data))
+
 	if err := xml.Unmarshal(data, &x); err != nil {
 		return nil, err
 	}
 
 	if x.Failure != nil {
+		fmt.Println("Error here 1")
 		msg := strings.TrimSpace(x.Failure.Message)
 		err := &AuthenticationError{Code: x.Failure.Code, Message: msg}
 		return nil, err
