@@ -201,6 +201,8 @@ func (c *Client) ServiceValidateURLForRequest(ticket string, r *http.Request) (s
 
 //ValidateURLForRequest determines the CAS validate URL for the ticket and http.Request.
 func (c *Client) ValidateURLForRequest(ticket string, r *http.Request) (string, error) {
+	fmt.Println("Validating ticket")
+
 	u, err := c.URL.Parse(path.Join(c.URL.Path, "validate"))
 	if err != nil {
 		return "", err
