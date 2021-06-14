@@ -28,13 +28,14 @@ func sanitisedURL(unclean *url.URL) *url.URL {
 func sanitisedURLString(unclean *url.URL) string {
 
 	result := sanitisedURL(unclean).String()
-	result = strings.TrimSuffix(result, "/")
 
 	//Check if path already has a slash at the end of it
 	//e.g., https://seminars.columbia.edu/someresource -- OK
 	//but https://seminars.columbia.edu -- not OK and needs a slash
 	parsedService, err := url.Parse(result)
 	if err == nil {
+		result = strings.TrimSuffix(result, "/")
+
 		if parsedService != nil && (parsedService.Path == "/" || parsedService.Path == "") {
 			result += "/"
 		}
