@@ -2,6 +2,7 @@ package gocas
 
 import (
 	"net/url"
+	"strings"
 )
 
 var (
@@ -22,23 +23,22 @@ func sanitisedURL(unclean *url.URL) *url.URL {
 	return unclean
 }
 
-// sanitisedURLString cleans a URL and returns its string value
+//sanitisedURLString cleans a URL and returns its string value
+//with a trailing slash
 func sanitisedURLString(unclean *url.URL) string {
 
-	return sanitisedURL(unclean).String()
-	// result = strings.TrimSuffix(result, "/")
-	// if requiresTrailingSlash {
-	// 	//Check if path already has a slash at the end of it
-	// 	//e.g., https://seminars.columbia.edu/someresource -- OK
-	// 	//but https://seminars.columbia.edu -- not OK and needs a slash
-	// 	parsedService, err := url.Parse(result)
-	// 	if err == nil {
-	// 		if parsedService != nil && (parsedService.Path == "/" || parsedService.Path == "") {
-	// 			result += "/"
-	// 		}
-	// 	}
+	result := sanitisedURL(unclean).String()
+	result = strings.TrimSuffix(result, "/")
 
-	// }
+	//Check if path already has a slash at the end of it
+	//e.g., https://seminars.columbia.edu/someresource -- OK
+	//but https://seminars.columbia.edu -- not OK and needs a slash
+	parsedService, err := url.Parse(result)
+	if err == nil {
+		if parsedService != nil && (parsedService.Path == "/" || parsedService.Path == "") {
+			result += "/"
+		}
+	}
 
-	// return result
+	return result
 }
