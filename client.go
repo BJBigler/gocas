@@ -413,7 +413,7 @@ func (c *Client) validateTicketCas1(ticket string, service *http.Request) error 
 //
 // A cookie is set on the response if one is not provided with the request.
 // Validates the ticket if the URL parameter is provided.
-func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) {
+func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) error {
 
 	//1) Get the cookie
 	cookie := getCookie(w, r, c.domain)
@@ -425,13 +425,17 @@ func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) {
 
 	//3) Grab the session value (i.e., ticket) from the session store,
 	//if it's there. If not, then see (4)
-	sessionValue, _ := c.sessions.Read(sessionKey)
+	sessionValue, err := c.sessions.Read(sessionKey)
+
+	if err != nil {
+		return err
+	}
 
 	if sessionValue != "" {
 		a, err := c.tickets.Read(sessionValue)
 		if err == nil {
 			setAuthenticationResponse(r, a)
-			return
+			return nil
 		}
 	}
 
@@ -451,17 +455,22 @@ func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) {
 			if glog.V(2) {
 				glog.Infof("Error validating ticket: %v", err)
 			}
-			return // allow ServeHTTP()
+			return err // allow ServeHTTP()
 		}
 
 		//Put the ticket value into session
-		c.sessions.Write(cookie.Value, ticket)
+		err = c.sessions.Write(cookie.Value, ticket)
+
+		if err != nil {
+			return err
+		}
 
 		//Read ticket from session
 		a, err := c.tickets.Read(ticket)
 
 		if err != nil {
 			clearCookie(w, cookie)
+			return err
 		}
 
 		setAuthenticationResponse(r, a)
@@ -474,6 +483,7 @@ func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) {
 		//http.Redirect(w, r, removeTicketFromURL(r.URL).String(), 302)
 	}
 
+	return nil
 }
 
 // getCookie finds or creates the session cookie on the response.
