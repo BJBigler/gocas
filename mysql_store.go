@@ -173,37 +173,6 @@ func (s *MySQLStore) Clear() error {
 	return nil
 }
 
-func setAuthenticationResponseFromMySQL(c *Client, cookie *http.Cookie, w http.ResponseWriter, r *http.Request) error {
-
-	if glog.V(2) {
-		glog.Infof("gocas: getting ticket from MySQL (cookie %v)", cookie.Value)
-	}
-
-	ticket, err := getTicketFromMySQL(c.db, cookie)
-
-	if err != nil {
-		return err
-	}
-
-	if glog.V(2) {
-		glog.Infof("gocas: ticket from MySQL was %v", ticket)
-	}
-
-	t, err := c.tickets.Read(ticket)
-
-	if err != nil {
-		return err
-	}
-
-	if t == nil {
-		return fmt.Errorf("could not read ticket %s in AuthenicationResponse", ticket)
-	}
-
-	setAuthenticationResponse(r, t)
-	return nil
-
-}
-
 func setAuthenticationResponseFromCookie(c *Client, cookie *http.Cookie, w http.ResponseWriter, r *http.Request) error {
 	var err error
 
