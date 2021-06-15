@@ -12,6 +12,8 @@ import (
 
 	"github.com/bjbigler/database"
 	"github.com/golang/glog"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 )
 
 //Options for client configuration
@@ -465,6 +467,11 @@ func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) error {
 
 		if err != nil {
 			clearCookie(w, cookie)
+
+			if grpc.Code(err) == codes.NotFound {
+				err = nil
+			}
+
 			return err
 		}
 
