@@ -12,8 +12,8 @@ import (
 
 	"github.com/bjbigler/database"
 	"github.com/golang/glog"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 //Options for client configuration
@@ -423,16 +423,17 @@ func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) error {
 	//3) Grab the session value (i.e., ticket) from the session store,
 	//if it's there. If not, then see (4)
 	sessionValue, err := c.sessions.Read(sessionKey)
-
-	if err != nil {
-		return err
+	if err != nil && status.Code(err) != codes.NotFound {
+		fmt.Println("gocas.GetSession: err reading sessionValue ", err)
 	}
 
 	if sessionValue != "" {
 		a, err := c.tickets.Read(sessionValue)
+
 		if err == nil {
 			setAuthenticationResponse(r, a)
-			return nil
+		} else if status.Code(err) != codes.NotFound {
+			fmt.Println("gocas.GetSession: err reading ticket ", err)
 		}
 	}
 
@@ -468,7 +469,7 @@ func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) error {
 		if err != nil {
 			clearCookie(w, cookie)
 
-			if grpc.Code(err) == codes.NotFound {
+			if status.Code(err) == codes.NotFound {
 				err = nil
 			}
 
@@ -519,19 +520,6 @@ func getCookie(w http.ResponseWriter, r *http.Request, domain string) *http.Cook
 	}
 
 	return c
-}
-
-func getTicketFromMySQL(db *database.DB, cookie *http.Cookie) (string, error) {
-
-	session, err := getSessionFromMySQL(db, cookie.Value)
-
-	if session != nil {
-		return session.Value, nil
-	}
-	if glog.V(2) {
-		glog.Infof("No session found using cooking value %s: ", cookie.Value)
-	}
-	return "", err
 }
 
 // newSessionID generates a new opaque session identifier for use in the cookie.
