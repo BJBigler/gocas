@@ -148,8 +148,6 @@ func (c *Client) LoginURLForRequest(r *http.Request, referer *url.URL) (string, 
 
 	serviceURL := sanitisedURLString(service)
 
-	fmt.Println("Service URL when creating LoginURL", serviceURL)
-
 	q := u.Query()
 	q.Add("service", serviceURL)
 	u.RawQuery = q.Encode()
@@ -195,7 +193,6 @@ func (c *Client) ServiceValidateURLForRequest(ticket string, r *http.Request) (s
 	q.Add("ticket", ticket)
 	u.RawQuery = q.Encode()
 
-	fmt.Println("Service URL when validating request", sanitisedURLString(service))
 	return u.String(), nil
 }
 
@@ -217,8 +214,6 @@ func (c *Client) ValidateURLForRequest(ticket string, r *http.Request) (string, 
 	q.Add("service", sanitisedURLString(service))
 	q.Add("ticket", ticket)
 	u.RawQuery = q.Encode()
-
-	fmt.Println("Service URL when validating URL for request", sanitisedURLString(service))
 
 	return u.String(), nil
 }
