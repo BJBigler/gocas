@@ -180,7 +180,7 @@ func (c *Client) LogoutURLForRequest(r *http.Request) (string, error) {
 		u.RawQuery = q.Encode()
 
 		if glog.V(2) {
-			glog.Info("LogOut service URL %v",
+			glog.Info("LogOut service URL",
 				sanitisedURLString(service))
 		}
 
@@ -207,7 +207,7 @@ func (c *Client) ServiceValidateURLForRequest(ticket string, r *http.Request) (s
 	u.RawQuery = q.Encode()
 
 	if glog.V(2) {
-		glog.Info("ServiceValidateURLForRequest %v",
+		glog.Info("ServiceValidateURLForRequest",
 			sanitisedURLString(service))
 	}
 
@@ -453,6 +453,7 @@ func (c *Client) GetSession(w http.ResponseWriter, r *http.Request) error {
 
 		if err == nil {
 			setAuthenticationResponse(r, a)
+			return nil
 		} else if status.Code(err) != codes.NotFound {
 			fmt.Println("gocas.GetSession: err reading ticket ", err)
 		}
